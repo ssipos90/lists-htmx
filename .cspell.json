@@ -1,0 +1,12 @@
+{
+  "import": ["../.cspell.json"],
+  "dictionaries": ["words", "rust"],
+  "dictionaryDefinitions": [
+    {
+      "name": "words",
+      "path": "./words.txt",
+      "addWords": true
+    }
+  ],
+  "ignorePaths": ["./words.txt"]
+}
