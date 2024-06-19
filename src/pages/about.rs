@@ -7,8 +7,9 @@ use hypertext::{maud, html_elements, GlobalAttributes};
 
 use crate::layouts::default::DefaultLayout;
 
-async fn about() -> impl IntoResponse {
-    DefaultLayout::try_new(
+pub async fn about() -> impl IntoResponse {
+    DefaultLayout::new(
+        "About".to_string(),
         maud! {
             div {
                 p class="lead" {
@@ -16,9 +17,5 @@ async fn about() -> impl IntoResponse {
                 }
             }
         }
-    ).await
-}
-
-pub fn routes() -> Router {
-    Router::new().route("/about", get(about))
+    )
 }

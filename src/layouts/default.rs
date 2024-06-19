@@ -4,19 +4,24 @@ use axum::{
 };
 use hypertext::{html_elements, maud, GlobalAttributes, Renderable};
 
-use crate::htmx::HtmxAttributes;
-
 pub struct DefaultLayout<R> {
     content: R,
-    some_stuff_from_db: String,
+    title: String,
+    status: http::StatusCode,
 }
 
 impl<R: Renderable> DefaultLayout<R> {
-    pub async fn try_new(content: R) -> Result<Self, String> {
-        Ok(Self {
+    pub fn new<S: Into<String>>(title: S, content: R) -> Self {
+        Self {
             content,
-            some_stuff_from_db: "some stuff".to_string(),
-        })
+            title: title.into(),
+            status: http::StatusCode::OK
+        }
+    }
+
+    pub fn set_status(mut self, status: http::StatusCode) -> Self {
+        self.status = status;
+        self
     }
 }
 
@@ -26,17 +31,15 @@ impl<R: Renderable> Renderable for DefaultLayout<R> {
             !DOCTYPE
             html lang="en" {
                 head {
-                    title { "About" }
+                    title { (self.title)}
+                    script src="/js/htmx.min.js" {}
+                    script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries" {}
                 }
-                body {
-                    h1 { "About" }
-                    section class="container" {
+                body class="bg-gray-100" {
+                    main class="container mx-auto my-10" {
                         (self.content)
                     }
-                    p { "Some stuff from the database: " (self.some_stuff_from_db) }
-                    div hx_get="/api/some-data" hx_target="#some-data" {
-                        "Click here to load some data"
-                    }
+
                 }
             }
         }

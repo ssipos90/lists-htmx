@@ -1,0 +1,15 @@
+services:
+  pg:
+    image: postgres:latest
+    container_name: pg
+    restart: unless-stopped
+    user: postgres
+    environment:
+      POSTGRES_PASSWORD: 1q2w3e
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - 5439:5432
+
+volumes:
+  pg_data:

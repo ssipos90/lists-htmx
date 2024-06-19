@@ -1,10 +1,11 @@
-use axum::{response::IntoResponse, routing::get, Router};
+use axum::response::IntoResponse;
 use hypertext::{maud, html_elements, GlobalAttributes};
 
 use crate::layouts::default::DefaultLayout;
 
-async fn home() -> impl IntoResponse {
-    DefaultLayout::try_new(
+pub async fn dashboard() -> impl IntoResponse {
+    DefaultLayout::new(
+        "Home".to_string(),
         maud! {
             div {
                 p class="lead" {
@@ -12,9 +13,5 @@ async fn home() -> impl IntoResponse {
                 }
             }
         }
-    ).await
-}
-
-pub fn routes() -> Router {
-    Router::new().route("/", get(home))
+    )
 }
