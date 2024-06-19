@@ -19,7 +19,6 @@ pub trait HtmxAttributes: GlobalAttributes {
     const hx_indicate: Attribute = Attribute;
     const hx_push_url: Attribute = Attribute;
     const hx_prompt: Attribute = Attribute;
-
 }
 
 impl<T: GlobalAttributes> HtmxAttributes for T {}

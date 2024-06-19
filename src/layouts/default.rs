@@ -32,11 +32,12 @@ impl<R: Renderable> Renderable for DefaultLayout<R> {
             html lang="en" {
                 head {
                     title { (self.title)}
-                    script src="/js/htmx.min.js" {}
-                    script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries" {}
+                    script defer src="/js/htmx.min.js" {}
+                    script defer src="/js/script.js" {}
+                    link rel="stylesheet" href="/style.css";
                 }
                 body class="bg-gray-100" {
-                    main class="container mx-auto my-10" {
+                    main id="content" class="container mx-auto my-10" {
                         (self.content)
                     }
 

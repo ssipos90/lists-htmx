@@ -5,7 +5,7 @@ use crate::layouts::default::DefaultLayout;
 
 pub async fn dashboard() -> impl IntoResponse {
     DefaultLayout::new(
-        "Home".to_string(),
+        "Home",
         maud! {
             div {
                 p class="lead" {

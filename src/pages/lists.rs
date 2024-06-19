@@ -1,7 +1,7 @@
 use axum::{
     extract::{Form, Path, Query, State},
     http::{HeaderMap, StatusCode},
-    response::IntoResponse,
+    response::{IntoResponse, Redirect},
 };
 use hypertext::Renderable;
 use std::sync::Arc;
@@ -14,11 +14,6 @@ use crate::{
     models, services, AppState,
 };
 
-struct Crap {
-    content: String,
-    status: StatusCode,
-}
-
 #[tracing::instrument(skip(state))]
 pub async fn create_list(
     headers: HeaderMap,
@@ -26,28 +21,23 @@ pub async fn create_list(
     Form(form): Form<models::CreateList>,
 ) -> impl IntoResponse {
     let (msg, status) = match services::create_list(&state.pool, form).await {
-        Ok(_) => (Message::Success("List created".into()), StatusCode::CREATED),
+        Ok(list) => {
+            return Redirect::to(&format!("/list/{}", list.id)).into_response();
+        }
         Err(_) => (
             Message::Error("Failed to create list".into()),
             StatusCode::INTERNAL_SERVER_ERROR,
         ),
     };
 
-    let pagination = Pagination::default();
+    let component = components::create_list(Some(msg));
 
-    let lists = services::fetch_lists(&state.pool, pagination)
-        .await
-        .unwrap();
-
-    let page = lists.page;
-
-    let component = components::lists(lists, Some(msg));
+    dbg!(&headers);
 
     if headers.get("HX-Request").is_some() {
-        // Response from status and something that derives IntoResponse
         (status, component.render()).into_response()
     } else {
-        DefaultLayout::new(format!("Lists (Page {})", page), component)
+        DefaultLayout::new("Create list", component)
             .set_status(status)
             .into_response()
     }
@@ -82,6 +72,6 @@ pub async fn list(
             format!("List: {}", list.name),
             components::list(list),
         )),
-        None => Err(ErrorPage::NotFound("List not found".into())),
+        None => Err(ErrorPage::NotFound(Some("List not found".into()))),
     }
 }

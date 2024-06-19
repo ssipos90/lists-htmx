@@ -1,18 +1,31 @@
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 
+use crate::components;
+use crate::layouts::default::DefaultLayout;
+
 #[allow(dead_code)]
 pub type PageResult<T> = core::result::Result<T, ErrorPage>;
 
 #[derive(Debug)]
 pub enum ErrorPage {
-    NotFound(String),
-    InternalServerError(String),
+    NotFound(Option<String>),
+    InternalServerError(Option<String>),
 }
 
 impl IntoResponse for ErrorPage {
     fn into_response(self) -> Response {
-        (StatusCode::INTERNAL_SERVER_ERROR, "UNHANDLED_CLIENT_ERROR").into_response()
+        let (status, message) = match self {
+            Self::NotFound(message) => (StatusCode::NOT_FOUND, message.unwrap_or("404 Not Found".into())),
+            Self::InternalServerError(message) => (StatusCode::INTERNAL_SERVER_ERROR, message.unwrap_or("500 Internal Server Error".into())),
+        };
+
+        DefaultLayout::new(
+            &message,
+            components::error(&message, None),
+        )
+            .set_status(status)
+            .into_response()
     }
 }
 

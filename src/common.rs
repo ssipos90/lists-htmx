@@ -4,6 +4,7 @@ use serde::Deserialize;
 use crate::components::message;
 
 pub const DATE_TIME_FORMAT: &str = "%c";
+pub const ISO_DATE_TIME_FORMAT: &str = "%Y-%m-%dT%H:%M:%S%.3fZ";
 
 #[derive(Debug, Deserialize)]
 pub struct QueryPagination {
